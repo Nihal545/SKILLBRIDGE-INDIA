@@ -11,6 +11,11 @@ const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 
+// Health Check Route
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Security Middlewares
 app.use(helmet());
 const corsOptions = {
@@ -19,7 +24,9 @@ const corsOptions = {
         'https://skillbridge-india.vercel.app',
         process.env.FRONTEND_URL
     ].filter(Boolean),
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10kb' }));
@@ -30,6 +37,15 @@ const limiter = rateLimit({
     max: 100
 });
 app.use('/api', limiter);
+
+// Basic Routes
+app.get('/', (req, res) => {
+    res.json({ message: 'SkillBridge India API is running...' });
+});
+
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', timestamp: new Date() });
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
