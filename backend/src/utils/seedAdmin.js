@@ -9,14 +9,11 @@ const seedAdmin = async () => {
 
         if (!adminExists) {
             const adminUser = new User({
-                firstName: 'Super',
-                lastName: 'Admin',
+                name: 'Super Admin',
                 email: adminEmail,
                 password: adminPassword,
                 role: 'admin',
-                isVerified: true,
-                skills: [],
-                portfolio: []
+                verified: true
             });
 
             await adminUser.save();
