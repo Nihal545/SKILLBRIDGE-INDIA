@@ -11,6 +11,7 @@ import Wallet from './pages/Wallet';
 import Verification from './pages/Verification';
 import AdminDashboard from './pages/AdminDashboard';
 import Proposals from './pages/Proposals';
+import MyJobs from './pages/MyJobs';
 
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -27,6 +28,7 @@ const App = () => {
                         
                         {/* Protected Routes */}
                         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                        <Route path="/my-jobs" element={<ProtectedRoute><MyJobs /></ProtectedRoute>} />
                         <Route path="/proposals" element={<ProtectedRoute><Proposals /></ProtectedRoute>} />
                         <Route path="/jobs" element={<ProtectedRoute><FindJobs /></ProtectedRoute>} />
                         <Route path="/post-job" element={<ProtectedRoute><PostJob /></ProtectedRoute>} />
