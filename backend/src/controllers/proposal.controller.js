@@ -68,3 +68,35 @@ exports.getFreelancerProposals = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// @desc    Hire a freelancer (accept proposal) - Client only
+// @route   PUT /api/proposals/:proposalId/hire
+exports.hireFreelancer = async (req, res) => {
+    try {
+        const proposal = await Proposal.findById(req.params.proposalId).populate('jobId');
+        if (!proposal) return res.status(404).json({ message: 'Proposal not found' });
+
+        // Ensure the client owns the job
+        if (String(proposal.jobId.clientId) !== String(req.user._id)) {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
+        // Mark proposal as accepted/hired
+        proposal.status = 'hired';
+        await proposal.save();
+
+        // Close the job
+        await Job.findByIdAndUpdate(proposal.jobId._id, { status: 'closed' });
+
+        // Reject all other proposals for this job
+        await Proposal.updateMany(
+            { jobId: proposal.jobId._id, _id: { $ne: proposal._id } },
+            { status: 'rejected' }
+        );
+
+        res.json({ message: 'Freelancer hired successfully!', proposal });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
