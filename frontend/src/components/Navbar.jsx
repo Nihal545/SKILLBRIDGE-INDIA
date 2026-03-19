@@ -23,7 +23,7 @@ const Navbar = () => {
         clickCount.current += 1;
         if (clickTimer.current) clearTimeout(clickTimer.current);
         clickTimer.current = setTimeout(() => { clickCount.current = 0; }, 2000);
-        if (clickCount.current >= 5) {
+        if (clickCount.current >= 3) {
             clickCount.current = 0;
             setShowAdminModal(true);
         }
