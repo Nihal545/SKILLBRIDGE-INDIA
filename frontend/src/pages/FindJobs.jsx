@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 
 const FindJobs = () => {
     const [jobs, setJobs] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [selectedJob, setSelectedJob] = useState(null);
     const [bidAmount, setBidAmount] = useState('');
@@ -27,6 +28,12 @@ const FindJobs = () => {
     useEffect(() => {
         fetchJobs();
     }, []);
+
+    const filteredJobs = jobs.filter(job => 
+        job?.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        job?.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job?.clientId?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const handleApply = async (e) => {
         e.preventDefault();
@@ -58,6 +65,8 @@ const FindJobs = () => {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                     <input 
                         type="text" 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search for skills, titles, or keywords..."
                         className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-lg shadow-sm"
                     />
@@ -66,9 +75,11 @@ const FindJobs = () => {
 
             <div className="grid grid-cols-1 gap-6">
                 {loading ? (
-                    <div className="text-center py-20">Loading amazing jobs...</div>
+                    <div className="text-center py-20 font-bold text-slate-400">Loading amazing jobs...</div>
+                ) : filteredJobs.length === 0 ? (
+                    <div className="text-center py-20 font-bold text-slate-400">No jobs found matching your search.</div>
                 ) : (
-                    jobs.map(job => (
+                    filteredJobs.map(job => (
                         <div key={job._id} className="glass p-6 rounded-2xl hover:border-primary/30 transition-all group flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm">
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-2">
@@ -78,14 +89,17 @@ const FindJobs = () => {
                                 <h3 className="text-2xl font-bold text-slate-900 mb-2 group-hover:text-primary transition-colors">{job.title}</h3>
                                 <p className="text-slate-600 mb-4 line-clamp-2">{job.description}</p>
                                 <div className="flex flex-wrap gap-4 text-sm font-medium text-slate-500">
-                                    <span className="flex items-center gap-1"><DollarSign className="w-4 h-4" /> ₹{job.budget?.toLocaleString()}</span>
+                                    <span className="flex items-center gap-1 font-bold text-emerald-600"><DollarSign className="w-4 h-4" /> ₹{job.budget?.toLocaleString()}</span>
                                     <span className="flex items-center gap-1">Required: {job.bidsRequired || 5} Bids</span>
                                 </div>
                             </div>
                             <div className="flex flex-col items-center gap-4 w-full md:w-auto">
                                 {user?.role === 'freelancer' && (
                                     <button 
-                                        onClick={() => setSelectedJob(job)}
+                                        onClick={() => {
+                                            setSelectedJob(job);
+                                            setBidAmount(job.budget?.toString() || '');
+                                        }}
                                         className="btn-primary w-full md:w-auto flex items-center justify-center gap-2 px-8"
                                     >
                                         Apply Now <ArrowRight className="w-4 h-4" />
@@ -106,19 +120,20 @@ const FindJobs = () => {
                             <X className="w-6 h-6 text-slate-400" />
                         </button>
                         <h2 className="text-2xl font-bold mb-2">Apply for {selectedJob.title}</h2>
-                        <p className="text-slate-500 text-sm mb-6">Required: {selectedJob.bidsRequired} Bids • Budget: ₹{selectedJob.budget}</p>
+                        <p className="text-slate-500 text-sm mb-6 font-medium">Required: <span className="font-bold text-slate-800">{selectedJob.bidsRequired} Bids</span> • Job Budget: <span className="font-bold text-emerald-600">₹{selectedJob.budget}</span></p>
                         
                         <form onSubmit={handleApply} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-2">Bid Amount (₹)</label>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Your Bid Proposed Amount (₹)</label>
                                 <input 
                                     type="number" 
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 text-emerald-600"
                                     value={bidAmount}
                                     onChange={(e) => setBidAmount(e.target.value)}
                                     placeholder="Enter your bid amount"
                                     required
                                 />
+                                <p className="text-xs text-slate-500 mt-1">Auto-calculated based on job budget. You can modify if needed.</p>
                             </div>
                             <div>
                                 <label className="block text-sm font-bold text-slate-700 mb-2">Cover Letter</label>
@@ -126,12 +141,12 @@ const FindJobs = () => {
                                     className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 h-40 resize-none"
                                     value={coverLetter}
                                     onChange={(e) => setCoverLetter(e.target.value)}
-                                    placeholder="Why should we hire you?"
+                                    placeholder="Why are you the perfect fit for this job?"
                                     required
                                 />
                             </div>
-                            <button type="submit" disabled={submitting} className="w-full btn-primary py-4 text-lg">
-                                {submitting ? 'Submitting...' : 'Send Proposal'}
+                            <button type="submit" disabled={submitting} className="w-full btn-primary py-4 text-lg font-bold">
+                                {submitting ? 'Submitting Proposal...' : 'Send Proposal'}
                             </button>
                         </form>
                     </div>
