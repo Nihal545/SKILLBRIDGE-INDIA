@@ -10,6 +10,7 @@ import PostJob from './pages/PostJob';
 import Wallet from './pages/Wallet';
 import Verification from './pages/Verification';
 import AdminDashboard from './pages/AdminDashboard';
+import Proposals from './pages/Proposals';
 
 const App = () => {
     return (
@@ -22,6 +23,7 @@ const App = () => {
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/proposals" element={<Proposals />} />
                         <Route path="/jobs" element={<FindJobs />} />
                         <Route path="/post-job" element={<PostJob />} />
                         <Route path="/wallet" element={<Wallet />} />
