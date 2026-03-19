@@ -55,3 +55,16 @@ exports.getJobProposals = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// @desc    Get all proposals submitted by the logged-in freelancer
+// @route   GET /api/proposals/freelancer
+exports.getFreelancerProposals = async (req, res) => {
+    try {
+        const proposals = await Proposal.find({ freelancerId: req.user._id })
+            .populate('jobId', 'title budget status')
+            .sort({ createdAt: -1 });
+        res.json(proposals);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
