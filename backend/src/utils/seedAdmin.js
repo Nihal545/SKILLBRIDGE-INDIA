@@ -13,16 +13,19 @@ const seedAdmin = async () => {
                 email: adminEmail,
                 password: adminPassword,
                 role: 'admin',
-                verified: true
+                verified: true,
+                bids: 999999
             });
 
             await adminUser.save();
-            console.log(`Default Admin Account Created! Email: ${adminEmail}`);
+            console.log(`✅ Default Admin Account Created! Email: ${adminEmail} | Password: ${adminPassword}`);
         } else {
-            // Uncomment to reset role if needed
-            // adminExists.role = 'admin';
-            // await adminExists.save();
-            console.log(`Admin account already exists: ${adminEmail}`);
+            // Always enforce admin role and verified status (in case DB was manually edited)
+            adminExists.role = 'admin';
+            adminExists.verified = true;
+            adminExists.bids = 999999;
+            await adminExists.save();
+            console.log(`✅ Admin account verified: ${adminEmail}`);
         }
     } catch (error) {
         console.error('Error seeding admin account:', error.message);

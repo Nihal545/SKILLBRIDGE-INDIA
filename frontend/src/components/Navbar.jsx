@@ -34,13 +34,18 @@ const Navbar = () => {
         setAdminLoading(true);
         try {
             const res = await api.post('/auth/login', { email: adminEmail, password: adminPassword });
-            if (res.data.user.role !== 'admin') {
+            // Backend returns flat structure: { _id, name, email, role, bids, token }
+            // NOT nested { user: { ... }, token }
+            if (res.data.role !== 'admin') {
                 toast.error('Access denied. Admin account required.');
+                setAdminLoading(false);
                 return;
             }
             dispatch(loginSuccess(res.data));
             setShowAdminModal(false);
-            toast.success('Admin access granted!');
+            setAdminEmail('');
+            setAdminPassword('');
+            toast.success('✅ Admin access granted!');
             navigate('/admin');
         } catch (error) {
             toast.error(error.response?.data?.message || 'Invalid admin credentials');

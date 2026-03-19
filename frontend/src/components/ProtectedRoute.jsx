@@ -3,7 +3,9 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const ProtectedRoute = ({ children }) => {
-    const { user, token } = useSelector(state => state.auth);
+    const { user } = useSelector(state => state.auth);
+    // Token lives in localStorage, NOT in Redux state (Redux has only 'user' field)
+    const token = localStorage.getItem('token');
     const location = useLocation();
 
     // Not logged in -> Login page
@@ -11,8 +13,13 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to="/login" replace />;
     }
 
-    // Unverified Freelancer strictly redirected to Verification page
-    if (user.role === 'freelancer' && user.idVerification?.status === 'none' && location.pathname !== '/verify') {
+    // Unverified Freelancer -> force to Verification page
+    // Backend returns flat user: { role, idVerification: { status } }
+    if (
+        user.role === 'freelancer' &&
+        (!user.idVerification || user.idVerification?.status === 'none') &&
+        location.pathname !== '/verify'
+    ) {
         return <Navigate to="/verify" replace />;
     }
 
@@ -21,3 +28,4 @@ const ProtectedRoute = ({ children }) => {
 };
 
 export default ProtectedRoute;
+

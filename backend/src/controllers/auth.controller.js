@@ -23,6 +23,7 @@ exports.registerUser = async (req, res) => {
                 role: user.role,
                 bids: user.bids,
                 verified: user.verified,
+                idVerification: user.idVerification,
                 token: generateToken(user._id)
             });
         }
@@ -46,6 +47,7 @@ exports.loginUser = async (req, res) => {
                 role: user.role,
                 bids: user.bids,
                 verified: user.verified,
+                idVerification: user.idVerification,
                 token: generateToken(user._id)
             });
         } else {
