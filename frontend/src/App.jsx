@@ -12,6 +12,8 @@ import Verification from './pages/Verification';
 import AdminDashboard from './pages/AdminDashboard';
 import Proposals from './pages/Proposals';
 
+import ProtectedRoute from './components/ProtectedRoute';
+
 const App = () => {
     return (
         <Router>
@@ -22,13 +24,15 @@ const App = () => {
                         <Route path="/" element={<Navigate to="/login" />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/proposals" element={<Proposals />} />
-                        <Route path="/jobs" element={<FindJobs />} />
-                        <Route path="/post-job" element={<PostJob />} />
-                        <Route path="/wallet" element={<Wallet />} />
-                        <Route path="/verify" element={<Verification />} />
-                        <Route path="/admin" element={<AdminDashboard />} />
+                        
+                        {/* Protected Routes */}
+                        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                        <Route path="/proposals" element={<ProtectedRoute><Proposals /></ProtectedRoute>} />
+                        <Route path="/jobs" element={<ProtectedRoute><FindJobs /></ProtectedRoute>} />
+                        <Route path="/post-job" element={<ProtectedRoute><PostJob /></ProtectedRoute>} />
+                        <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
+                        <Route path="/verify" element={<ProtectedRoute><Verification /></ProtectedRoute>} />
+                        <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                     </Routes>
                 </main>
                 <Toaster position="bottom-right" />
@@ -36,5 +40,6 @@ const App = () => {
         </Router>
     );
 };
+
 
 export default App;
