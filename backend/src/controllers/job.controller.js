@@ -52,3 +52,29 @@ exports.getJobById = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// @desc    Get all jobs created by the logged-in client
+// @route   GET /api/jobs/client
+exports.getClientJobs = async (req, res) => {
+    try {
+        const jobs = await Job.find({ clientId: req.user._id }).sort({ createdAt: -1 });
+        res.json(jobs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Close a job
+// @route   PUT /api/jobs/:id/close
+exports.closeJob = async (req, res) => {
+    try {
+        const job = await Job.findOne({ _id: req.params.id, clientId: req.user._id });
+        if (!job) return res.status(404).json({ message: 'Job not found or unauthorized' });
+        
+        job.status = 'closed';
+        await job.save();
+        res.json({ message: 'Job successfully closed' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
